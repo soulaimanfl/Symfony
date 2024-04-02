@@ -1,0 +1,127 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Établissements{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Liste des Établissements</h1>
+        {% if etablissements|length > 0 %}
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Nature</th>
+                    <th>Secteur</th>
+                    <th>Adresse</th>
+                    <th>Département</th>
+                    <th>Commune</th>
+                    <th>Région</th>
+                    <th>Académie</th>
+                    <th>Date d'ouverture</th>
+                    <th>Coordonnées GPS</th>
+                    <th>Commentaires</th>
+                    <th>Modifier</th> <!-- Nouvelle colonne pour les boutons Modifier -->
+                    <th>Supprimer</th> <!-- Nouvelle colonne pour les boutons Supprimer -->
+                </tr>
+                </thead>
+                <tbody>
+                {% for etablissement in etablissements %}
+                    <tr>
+                        <td>{{ etablissement.appellationOfficielle }}</td>
+                        <td>{{ etablissement.denominationPrincipale }}</td>
+                        <td>{{ etablissement.secteur }}</td>
+                        <td>{{ etablissement.adresse }}, {{ etablissement.commune }}</td>
+                        <td>{{ etablissement.departement }}</td>
+                        <td>{{ etablissement.commune }}</td>
+                        <td>{{ etablissement.region }}</td>
+                        <td>{{ etablissement.academie }}</td>
+                        <td>{{ etablissement.dateOuverture|date('Y-m-d')}}</td>
+                        <td>Lat: {{ etablissement.latitude }}, Lon: {{ etablissement.longitude }}</td>
+                        <td>
+                            {% if etablissement.commentaires and etablissement.commentaires|length > 0 %}
+                                <!-- Affichage des commentaires -->
+                            {% else %}
+                                Pas de commentaires.
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ path('app_etablissement_edit', {'id': etablissement.id}) }}" class="btn btn-primary btn-sm">Modifier</a>
+                        </td>
+                        <td>
+                            <form method="post" action="{{ path('app_etablissement_delete', {'id': etablissement.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet établissement ?');">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ etablissement.id) }}">
+                                <button class="btn btn-danger btn-sm" type="submit">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+            </table>
+        {% else %}
+            <p>Aucun établissement trouvé.</p>
+        {% endif %}
+
+        <!-- Bouton Charger plus avec rechargement de page -->
+        {% if hasMore %}
+            <div class="mt-4 text-center">
+                <button class="btn btn-primary" onclick="loadMore()">Charger plus</button>
+            </div>
+
+            <div class="mb-3">
+                <a href="{{ path('etablissement_new') }}" class="btn btn-success">Ajouter un Nouvel Établissement</a>
+            </div>
+        {% endif %}
+    </div>
+
+
+    <div id="map" style="height: 500px;"></div>
+{% endblock %}
+
+    {% block javascripts %}
+        {{ parent() }}
+        <script>
+            function loadMore() {
+                var newPage = {{ currentPage + 1 }};
+                window.location.href = "{{ path('app_etablissement_index') }}" + "?page=" + newPage;
+            }
+
+
+            document.addEventListener("DOMContentLoaded", function() {
+                const data = [
+                    {% for etablissement in etablissements %}
+                    {
+                        nom: "{{ etablissement.appellationOfficielle|escape('js') }}",
+                        lat: {{ etablissement.latitude }},
+                        lon: {{ etablissement.longitude }},
+                    }{% if not loop.last %},{% endif %}
+                    {% endfor %}
+                ];
+
+
+                var map = L.map('map').fitWorld();
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                // Ajouter les marqueurs pour chaque établissement
+                let bounds = [];
+                data.forEach(function(etablissement) {
+                    const marker = L.marker([etablissement.lat, etablissement.lon]).addTo(map);
+                    marker.bindPopup("<b>" + etablissement.nom + "</b>");
+                    bounds.push([etablissement.lat, etablissement.lon]);
+                });
+
+                // Ajuster la vue de la carte pour inclure tous les marqueurs
+                if (bounds.length > 0) {
+                    map.fitBounds(bounds);
+                }
+            });
+
+
+            draw_map(data);
+        </script>
+    {% endblock %}
+
+

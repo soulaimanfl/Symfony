@@ -1,0 +1,24 @@
+
+
+{{ form_start(form) }}
+
+    {# Affiche chaque champ du formulaire individuellement, vous pouvez personnaliser l'affichage comme vous le souhaitez #}
+    {{ form_row(form.appellationOfficielle, {'label': 'Appellation Officielle', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.denominationPrincipale, {'label': 'Dénomination Principale', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.secteur, {'label': 'Secteur', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.longitude, {'label': 'Longitude', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.latitude, {'label': 'Latitude', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.adresse, {'label': 'Adresse', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.departement, {'label': 'Département', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.commune, {'label': 'Commune', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.region, {'label': 'Région', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.academie, {'label': 'Académie', 'attr': {'class': 'form-control'}}) }}
+    {{ form_row(form.dateOuverture, {'label': 'Date d\'Ouverture', 'attr': {'class': 'form-control'}}) }}
+
+    {# Bouton de soumission du formulaire #}
+<button type="submit" class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+
+{{ form_end(form) }}
+
+{# Lien de retour à la liste des établissements, si nécessaire #}
+<a href="{{ path('app_etablissement_index') }}" class="btn btn-link">Retour à la liste</a>

@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un établissement{% endblock %}
+
+{% block body %}
+    <h1 class="title">Modification d'un établissement</h1>
+    <a href="{{ path('app_etablissement_index') }}"><button class="button is-success is-rounded">Retour</button></a>
+    {{ include('etablissement/_form.html.twig', {'button_label': 'Modifier', 'form': form}) }}
+{% endblock %}

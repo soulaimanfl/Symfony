@@ -1,0 +1,17 @@
+{# templates/etablissement/new.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter un nouvel établissement{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>Ajouter un nouvel établissement</h1>
+
+        {# Inclure le template du formulaire. Assurez-vous que 'etablissementForm' correspond à la variable passée au template #}
+        {{ include('etablissement/_form.html.twig', {'form': etablissementForm, 'button_label': 'Créer'}) }}
+
+        <a href="{{ path('app_etablissement_index') }}">Retour à la liste</a>
+    </div>
+{% endblock %}
+
